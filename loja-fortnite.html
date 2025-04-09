@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Loja Fortnite</title>
+  <style>
+    body { background: #121212; color: white; font-family: Arial; margin: 0; padding: 0; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; padding: 20px; }
+    .item { background: #1e1e1e; border-radius: 8px; width: 160px; text-align: center; padding: 10px; border: 2px solid transparent; }
+    .item img { width: 100%; border-radius: 6px; }
+    .preco { color: #00f2ff; font-weight: bold; }
+    .comum { border-color: gray; }
+    .incomum { border-color: green; }
+    .raro { border-color: blue; }
+    .épico { border-color: purple; }
+    .lendário { border-color: orange; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center">Loja Fortnite - Atualizada</h2>
+  <div class="grid" id="lojaContainer">Carregando...</div>
+
+  <script>
+    const apiKey = 'e05f9d02-b052-4a43-8081-7c4c13cbab0c';
+    const raridades = {
+      common: 'comum',
+      uncommon: 'incomum',
+      rare: 'raro',
+      epic: 'épico',
+      legendary: 'lendário'
+    };
+
+    async function carregarLoja() {
+      const res = await fetch('https://fortnite-api.com/v2/shop/br', {
+        headers: { 'Authorization': apiKey }
+      });
+      const data = await res.json();
+      const container = document.getElementById('lojaContainer');
+      container.innerHTML = '';
+
+      const entries = [...data.data.featured.entries, ...data.data.daily.entries];
+
+      entries.forEach(item => {
+        const produto = item.items[0];
+        const raridade = raridades[produto.rarity?.value] || '';
+        const div = document.createElement('div');
+        div.className = `item ${raridade}`;
+        div.innerHTML = `
+          <img src="${produto.images.icon}" alt="${produto.name}">
+          <p><strong>${produto.name}</strong></p>
+          <p class="preco">${item.finalPrice} V-Bucks</p>
+          <p>${raridade.charAt(0).toUpperCase() + raridade.slice(1)}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    carregarLoja();
+  </script>
+</body>
+</html>
